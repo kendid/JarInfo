@@ -8,8 +8,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 public class JarInfo extends JFrame {
 
@@ -62,10 +65,22 @@ public class JarInfo extends JFrame {
         }
 
         try {
-            final ZipFile zipFile = new ZipFile(file);
+            final JarFile jarFile = new JarFile(file);
+            final Manifest manifest = jarFile.getManifest();
+            if (manifest != null) {
+                StringBuilder manifestString = new StringBuilder("From Manifest file:\n");
 
-            StringBuilder returnString = new StringBuilder();
-            final Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
+                final Attributes mainAttributes = manifest.getMainAttributes();
+                mainAttributes.forEach((k, v) -> manifestString.append(k.toString()).append(": ").append(v.toString()).append("\n"));
+
+                final Map<String, Attributes> manifestEntries = manifest.getEntries();
+                manifestEntries.forEach((k, v) -> manifestString.append("Key: ").append(k).append(", Value: ").append(v.toString()).append("\n"));
+
+                return manifestString.toString().trim();
+            }
+
+            StringBuilder returnString = new StringBuilder("Could not find Manifest, files in archive:\n");
+            final Enumeration<? extends ZipEntry> enumeration = jarFile.entries();
             while (enumeration.hasMoreElements()) {
                 final ZipEntry zipEntry = enumeration.nextElement();
                 returnString.append(zipEntry.getName()).append("\n");
