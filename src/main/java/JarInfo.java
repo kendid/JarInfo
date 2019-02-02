@@ -11,8 +11,10 @@ public class JarInfo extends JFrame {
     private JarInfo() throws HeadlessException {
         super("JarInfo");
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        final JLabel label = new JLabel("Hello, world!");
-        this.add(label);
+        this.setMinimumSize(new Dimension(640, 480));
+
+        final JTextArea textArea = new JTextArea("Drop a .JAR file onto this window");
+        this.add(textArea);
         this.setDropTarget(new DropTarget() {
             @Override
             public synchronized void drop(final DropTargetDropEvent event) {
@@ -20,9 +22,9 @@ public class JarInfo extends JFrame {
                     event.acceptDrop(DnDConstants.ACTION_COPY);
                     final java.util.List<File> transferData = (java.util.List<File>) event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
 
-                    label.setText(transferData.toString());
+                    textArea.setText(transferData.toString());
                 } catch (Exception ex) {
-                    label.setText(ex.getMessage());
+                    textArea.setText(ex.getMessage());
                     super.drop(event);
                 }
             }
