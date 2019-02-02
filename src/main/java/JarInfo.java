@@ -5,6 +5,7 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
+import java.util.List;
 
 public class JarInfo extends JFrame {
 
@@ -15,12 +16,13 @@ public class JarInfo extends JFrame {
 
         final JTextArea textArea = new JTextArea("Drop a .JAR file onto this window");
         this.add(textArea);
-        this.setDropTarget(new DropTarget() {
+
+        final DropTarget dt = new DropTarget() {
             @Override
             public synchronized void drop(final DropTargetDropEvent event) {
                 try {
                     event.acceptDrop(DnDConstants.ACTION_COPY);
-                    final java.util.List<File> transferData = (java.util.List<File>) event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    final List<File> transferData = (List<File>) event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
 
                     textArea.setText(transferData.toString());
                 } catch (Exception ex) {
@@ -28,7 +30,11 @@ public class JarInfo extends JFrame {
                     super.drop(event);
                 }
             }
-        });
+        };
+
+        textArea.setDropTarget(dt);
+        this.setDropTarget(dt);
+
         this.pack();
         this.setVisible(true);
     }
