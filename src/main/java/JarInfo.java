@@ -24,7 +24,7 @@ public class JarInfo extends JFrame {
                     event.acceptDrop(DnDConstants.ACTION_COPY);
                     final List<File> transferData = (List<File>) event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
 
-                    textArea.setText(transferData.toString());
+                    textArea.setText(retrieveJarInfo(transferData));
                 } catch (Exception ex) {
                     textArea.setText(ex.getMessage());
                     super.drop(event);
@@ -37,6 +37,19 @@ public class JarInfo extends JFrame {
 
         this.pack();
         this.setVisible(true);
+    }
+
+    private String retrieveJarInfo(final List<File> files) {
+        if (files.size() != 1) {
+            return "Please drop one and only one .JAR file onto this window";
+        }
+
+        final File file = files.get(0);
+        if (!file.getName().toLowerCase().endsWith(".jar")) {
+            return "Please drop one and only one .JAR file onto this window";
+        }
+
+        return file.getName();
     }
 
     public static void main(final String[] args) {
