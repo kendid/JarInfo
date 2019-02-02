@@ -5,7 +5,11 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
+import java.io.IOException;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class JarInfo extends JFrame {
 
@@ -49,7 +53,27 @@ public class JarInfo extends JFrame {
             return "Please drop one and only one .JAR file onto this window";
         }
 
-        return file.getName();
+        return retrieveJarInfo(file);
+    }
+
+    private String retrieveJarInfo(final File file) {
+        if (!file.canRead()) {
+            return "No read access on file " + file.getName();
+        }
+
+        try {
+            final ZipFile zipFile = new ZipFile(file);
+
+            StringBuilder returnString = new StringBuilder();
+            final Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
+            while (enumeration.hasMoreElements()) {
+                final ZipEntry zipEntry = enumeration.nextElement();
+                returnString.append(zipEntry.getName()).append("\n");
+            }
+            return returnString.toString().trim();
+        } catch (final IOException e) {
+            return "I/O Error during processing of file " + file.getName() + ": " + e.getMessage();
+        }
     }
 
     public static void main(final String[] args) {
